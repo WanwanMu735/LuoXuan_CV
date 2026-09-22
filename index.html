@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>罗璇 - 个人简历网站</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                        },
+                        slateBg: '#f8fafc'
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"PingFang SC"', '"Hiragino Sans GB"', '"Microsoft YaHei"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* 自定义微动效与过渡效果 */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 技能进度条动画 */
+        .progress-bar-inner {
+            transition: width 1s ease-in-out;
+        }
+
+        /* 卡片 Hover 阴影与微升效果 */
+        .card-hover {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px -8px rgba(244, 63, 94, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fda4af;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f43f5e;
+        }
+    </style>
+</head>
+<body class="bg-slateBg text-slate-700 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- 1. 顶部导航栏 (Header / Navbar) -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-rose-100 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                
+                <!-- Logo / 姓名 -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-400 to-rose-300 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-rose-200">
+                        罗
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold text-slate-800 tracking-wide block">罗璇</span>
+                        <span class="text-xs text-brand-500 font-medium hidden sm:block">AI产品运营 / 平台运营</span>
+                    </div>
+                </div>
+
+                <!-- Desktop 导航菜单 -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-2">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 text-brand-600 bg-brand-50 shadow-sm">
+                        <i class="fa-solid fa-user-astronaut mr-1.5"></i>首页/简介
+                    </button>
+                    <button onclick="switchTab('experience')" id="nav-experience" class="nav-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 text-slate-600 hover:text-brand-500 hover:bg-rose-50/50">
+                        <i class="fa-solid fa-briefcase mr-1.5"></i>工作/项目经历
+                    </button>
+                    <button onclick="switchTab('education')" id="nav-education" class="nav-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 text-slate-600 hover:text-brand-500 hover:bg-rose-50/50">
+                        <i class="fa-solid fa-graduation-cap mr-1.5"></i>教育背景
+                    </button>
+                    <button onclick="switchTab('skills')" id="nav-skills" class="nav-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 text-slate-600 hover:text-brand-500 hover:bg-rose-50/50">
+                        <i class="fa-solid fa-code mr-1.5"></i>技能特长
+                    </button>
+                    <button onclick="switchTab('honors')" id="nav-honors" class="nav-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 text-slate-600 hover:text-brand-500 hover:bg-rose-50/50">
+                        <i class="fa-solid fa-award mr-1.5"></i>证书/荣誉
+                    </button>
+                </nav>
+
+                <!-- 移动端汉堡菜单按钮 -->
+                <div class="flex md:hidden">
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="p-2 rounded-lg text-slate-600 hover:text-brand-500 hover:bg-rose-50 focus:outline-none">
+                        <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 移动端下拉导航栏 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-md border-b border-rose-100 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('home'); toggleMobileMenu();" id="mobile-nav-home" class="mobile-nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium bg-brand-50 text-brand-600 flex items-center">
+                <i class="fa-solid fa-user-astronaut w-6"></i>首页/简介
+            </button>
+            <button onclick="switchTab('experience'); toggleMobileMenu();" id="mobile-nav-experience" class="mobile-nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-rose-50 flex items-center">
+                <i class="fa-solid fa-briefcase w-6"></i>工作/项目经历
+            </button>
+            <button onclick="switchTab('education'); toggleMobileMenu();" id="mobile-nav-education" class="mobile-nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-rose-50 flex items-center">
+                <i class="fa-solid fa-graduation-cap w-6"></i>教育背景
+            </button>
+            <button onclick="switchTab('skills'); toggleMobileMenu();" id="mobile-nav-skills" class="mobile-nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-rose-50 flex items-center">
+                <i class="fa-solid fa-code w-6"></i>技能特长
+            </button>
+            <button onclick="switchTab('honors'); toggleMobileMenu();" id="mobile-nav-honors" class="mobile-nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-rose-50 flex items-center">
+                <i class="fa-solid fa-award w-6"></i>证书/荣誉
+            </button>
+        </div>
+    </header>
+
+    <!-- 主体内容容器 -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- ==================== 1. 首页 / 个人简介 Section ==================== -->
+        <section id="tab-home" class="tab-content active">
+            <!-- Hero Card -->
+            <div class="bg-white rounded-3xl p-6 sm:p-10 border border-rose-100 shadow-sm relative overflow-hidden mb-8 card-hover">
+                <div class="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-rose-50 rounded-full blur-3xl opacity-70 pointer-events-none"></div>
+                <div class="absolute bottom-0 left-1/3 -mb-10 w-48 h-48 bg-brand-50 rounded-full blur-2xl opacity-60 pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-8">
+                    <!-- 头像区域（智能探测与优雅 SVG 占位 fallback） -->
+                    <div class="relative group flex-shrink-0">
+                        <div class="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl p-1 bg-gradient-to-br from-brand-300 via-rose-200 to-brand-400 shadow-md">
+                            <!-- 备用占位层 (默认展示) -->
+                            <div id="avatar-fallback" class="w-full h-full rounded-[14px] bg-gradient-to-br from-slate-50 to-rose-50 flex flex-col items-center justify-center p-4 text-center border border-white">
+                                <div class="w-16 h-16 rounded-full bg-brand-100 text-brand-500 flex items-center justify-center text-2xl font-bold mb-2 shadow-inner">
+                                    罗璇
+                                </div>
+                                <span class="text-xs text-slate-400 font-medium">中山大学 · 金融学</span>
+                            </div>
+                            <!-- 真实头像层 (隐藏/加载成功后显示) -->
+                            <img id="avatar-img" class="w-full h-full object-cover rounded-[14px] hidden" alt="罗璇 个人头像">
+                        </div>
+                        <span class="absolute -bottom-2 -right-2 bg-brand-500 text-white text-xs px-2.5 py-1 rounded-full font-semibold shadow-sm flex items-center gap-1">
+                            <i class="fa-solid fa-circle text-[8px] text-emerald-300 animate-pulse"></i> 求职中
+                        </span>
+                    </div>
+
+                    <!-- 个人核心文字信息 -->
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-600 text-xs font-semibold mb-3 border border-brand-100">
+                            <i class="fa-solid fa-graduation-cap"></i> 中山大学 岭南学院 (大三)
+                        </div>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-800 mb-2 tracking-tight">
+                            罗璇 <span class="text-brand-500 text-2xl font-semibold">Luo Xuan</span>
+                        </h1>
+                        <p class="text-base sm:text-lg font-medium text-slate-600 mb-4">
+                            意向岗位：<span class="text-brand-600 font-bold bg-rose-50 px-2 py-0.5 rounded">AI产品运营</span> / <span class="text-brand-600 font-bold bg-rose-50 px-2 py-0.5 rounded">互联网平台运营</span>
+                        </p>
+                        
+                        <!-- 一句话标签/简介 -->
+                        <div class="bg-slate-50 border-l-4 border-brand-400 p-4 rounded-r-xl text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
+                            中山大学金融学本科，具备强定量分析与 AI 人机协同能力，专注于 AI 产品运营与互联网平台运营。
+                        </div>
+
+                        <!-- 快捷联系方式网格 -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <a href="mailto:2663721334@qq.com" class="flex items-center justify-center md:justify-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-100 hover:border-brand-200 hover:bg-rose-50/30 text-slate-600 transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-rose-100 text-brand-500 flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-regular fa-envelope"></i>
+                                </div>
+                                <span class="truncate">2663721334@qq.com</span>
+                            </a>
+                            <a href="tel:13751771716" class="flex items-center justify-center md:justify-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-100 hover:border-brand-200 hover:bg-rose-50/30 text-slate-600 transition-all">
+                                <div class="w-8 h-8 rounded-lg bg-rose-100 text-brand-500 flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-mobile-screen-button"></i>
+                                </div>
+                                <span>(86) 137-5177-1716</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Highlights Grid (三列亮点展示) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm card-hover">
+                    <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-500 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base mb-2">AI 人机协同与效率提升</h3>
+                    <p class="text-slate-500 text-xs leading-relaxed">
+                        极强 AI 工具深度使用习惯，熟练借助 ChatGPT/Claude/DeepSeek 进行复杂问题拆解与业务策略生成。
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm card-hover">
+                    <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-500 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base mb-2">定量数据建模与洞察</h3>
+                    <p class="text-slate-500 text-xs leading-relaxed">
+                        精通 Python、Stata 数据清洗与计量实证，拥有尼尔森IQ定量研究实习与数模一等奖实战积累。
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-rose-100 shadow-sm card-hover">
+                    <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-500 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-bullhorn"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base mb-2">行业研究与内容宣发</h3>
+                    <p class="text-slate-500 text-xs leading-relaxed">
+                        民生证券汽车组深研智驾产业链，熟练独立制作路演 PPT 与公众号宣发推文，转化技术与商业逻辑。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 2. 工作 / 项目经历 Section ==================== -->
+        <section id="tab-experience" class="tab-content">
+            <div class="space-y-8">
+                <!-- 模块标题：实习经历 -->
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-2.5 h-7 bg-brand-500 rounded-full"></div>
+                        <h2 class="text-2xl font-extrabold text-slate-800">实习经历</h2>
+                        <span class="text-xs bg-rose-100 text-brand-600 px-2.5 py-0.5 rounded-full font-medium">Internships</span>
+                    </div>
+
+                    <!-- 实习 1: 尼尔森IQ -->
+                    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-rose-100 shadow-sm mb-6 card-hover">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-2">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                    <span>尼尔森IQ (NielsenIQ)</span>
+                                </h3>
+                                <p class="text-sm text-brand-600 font-semibold mt-0.5">
+                                    战略分析与洞察部 - 定量研究金融组实习生
+                                </p>
+                            </div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 self-start sm:self-auto">
+                                <i class="fa-regular fa-calendar mr-1.5"></i>2026.01 - 2026.04
+                            </span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-600">
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-circle-check text-brand-400 mt-1 flex-shrink-0"></i>
+                                <div><strong class="text-slate-800">项目招投标与方案策划：</strong>参与某券商及 Top500 保险公司投标工作，负责投标文件撰写、核心数据填充与规范优化；优化投标展演 PPT 逻辑框架与视觉呈现，提升方案说服力与客户沟通效率。</div>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-circle-check text-brand-400 mt-1 flex-shrink-0"></i>
+                                <div><strong class="text-slate-800">问卷设计与链路测试：</strong>协助优化某头部电子支付品牌研报问卷，重构逻辑跳转与选项设表，提升数据采集精准度；全面排查问卷测试链路，保障在线问卷的高稳定性收集。</div>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-circle-check text-brand-400 mt-1 flex-shrink-0"></i>
+                                <div><strong class="text-slate-800">定量数据挖掘与行为分析：</strong>运用 Excel 交叉分析多维用户画像（人群/态度/行为），拆解品牌健康度与用户满意度核心指标，提取高价值商业洞察，归纳可落地策略。</div>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-circle-check text-brand-400 mt-1 flex-shrink-0"></i>
+                                <div><strong class="text-slate-800">洞察报告与可视化输出：</strong>整理研究成果，构建图表与对比分析模块，直观落地品牌健康度与满意度研究结论，为客户提供数字化战略决策参考。</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 实习 2: 民生证券研究院 -->
+                    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-rose-100 shadow-sm card-hover">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-2">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-800">民生证券研究院</h3>
+                                <p class="text-sm text-brand-600 font-semibold mt-0.5">汽车组实习生</p>
+                            </div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 self-start sm:self-auto">
+                                <i class="fa-regular fa-calendar mr-1.5"></i>2025.07 - 2025.11
+                            </span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-600">
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-circle-check text-brand-400 mt-1 flex-shrink-0"></i>
+                                <div><strong class="text-slate-800">前沿行业研究与竞品拆解：</strong>通过桌面研究深入分析智能驾驶与零部件市场格局；独立完成“智能驾驶政策演进”专题，系统梳理产业链影响；输出 Robotaxi 商业模式深度拆解报告。</div>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-circle-check text-brand-400 mt-1 flex-shrink-0"></i>
+                                <div><strong class="text-slate-800">公司基本面与指标监控：</strong>追踪曹操出行、舍弗勒等标的公司，利用 iFind 及财报数据建模提取核心经营与财务指标，定期更新针对目标公司的投资观点与竞争分析。</div>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-circle-check text-brand-400 mt-1 flex-shrink-0"></i>
+                                <div><strong class="text-slate-800">数据可视化与宣发传播：</strong>独立制作多份路演 PPT，清晰展现智驾技术迭代路径与市场机会；撰写多篇微信公众号推文，将复杂技术与商业逻辑转化为易传播内容，提升内容触达与传播转化。</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 模块标题：项目经历 -->
+                <div class="pt-4">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-2.5 h-7 bg-brand-500 rounded-full"></div>
+                        <h2 class="text-2xl font-extrabold text-slate-800">项目经历</h2>
+                        <span class="text-xs bg-rose-100 text-brand-600 px-2.5 py-0.5 rounded-full font-medium">Projects</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- 项目 1 -->
+                        <div class="bg-white rounded-2xl p-6 sm:p-8 border border-rose-100 shadow-sm card-hover">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-2">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">人口老龄化对国家创新能力影响研究</h3>
+                                    <span class="text-xs font-semibold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-md inline-block mt-1">
+                                        组员 · 广东省大学生创新创业项目
+                                    </span>
+                                </div>
+                                <span class="text-xs text-slate-500 font-medium"><i class="fa-regular fa-calendar mr-1"></i>2024.12 - 2025.12</span>
+                            </div>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex items-start gap-2">
+                                    <span class="w-1.5 h-1.5 bg-brand-400 rounded-full mt-2 flex-shrink-0"></span>
+                                    <div><strong class="text-slate-800">数据清洗与工程化拼接：</strong>使用 Python 对公开数据库跨年度面板数据进行清洗、缺失值处理与逻辑复核，完成多源面板数据拼接，确保样本连续性与实验可靠性。</div>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="w-1.5 h-1.5 bg-brand-400 rounded-full mt-2 flex-shrink-0"></span>
+                                    <div><strong class="text-slate-800">机制分析与异质性挖掘：</strong>建立机制路径传导模型，针对不同产业进行敏感度差异分析，基于定量结果输出应对老龄化的理论依据与政策建议。</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- 项目 2 -->
+                        <div class="bg-white rounded-2xl p-6 sm:p-8 border border-rose-100 shadow-sm card-hover">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-2">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">基于双目标优化与动态规划的 NIPT 检测决策模型</h3>
+                                    <span class="text-xs font-semibold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-md inline-block mt-1">
+                                        队长 · 全国大学生数学建模竞赛 (广东省一等奖)
+                                    </span>
+                                </div>
+                                <span class="text-xs text-slate-500 font-medium"><i class="fa-regular fa-calendar mr-1"></i>2025.09</span>
+                            </div>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex items-start gap-2">
+                                    <span class="w-1.5 h-1.5 bg-brand-400 rounded-full mt-2 flex-shrink-0"></span>
+                                    <div><strong class="text-slate-800">算法建模与数据分析：</strong>带队使用 Python/Stata 进行变量相关性探索与可视化分析，构建双目标优化模型与随机森林模型解决复杂决策问题，荣获<strong>广东省一等奖</strong>。</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- 项目 3 -->
+                        <div class="bg-white rounded-2xl p-6 sm:p-8 border border-rose-100 shadow-sm card-hover">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-2">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">上市公司股权集中度对企业绩效的影响</h3>
+                                    <span class="text-xs font-semibold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-md inline-block mt-1">
+                                        组长 · 计量经济学大作业
+                                    </span>
+                                </div>
+                                <span class="text-xs text-slate-500 font-medium"><i class="fa-regular fa-calendar mr-1"></i>2025.06</span>
+                            </div>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex items-start gap-2">
+                                    <span class="w-1.5 h-1.5 bg-brand-400 rounded-full mt-2 flex-shrink-0"></span>
+                                    <div><strong class="text-slate-800">实证分析与结论验证：</strong>清洗 Wind/CSMAR 数据库数据，采用固定效应与滞后回归模型，验证出股权集中度与 ROA 呈倒 U 型关系（最优持股点约 65.2%），展现严密的逻辑推演与数据敏感度。</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 3. 教育背景 Section ==================== -->
+        <section id="tab-education" class="tab-content">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 border border-rose-100 shadow-sm card-hover mb-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 pb-6 mb-6 gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-500 to-rose-400 text-white flex items-center justify-center text-2xl shadow-md">
+                            <i class="fa-solid fa-university"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-extrabold text-slate-800">中山大学 (Sun Yat-sen University)</h2>
+                            <p class="text-brand-600 font-semibold text-base">岭南学院 · 金融学（本科大三在读）</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-brand-50 text-brand-600 border border-brand-100">
+                        <i class="fa-regular fa-calendar-alt mr-2"></i>2023.07 - 至今
+                    </span>
+                </div>
+
+                <!-- 成绩亮点展示 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                            3.8
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold block uppercase">Academic Score</span>
+                            <span class="text-slate-800 font-bold text-sm">GPA: 3.8 / 4.0</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold block uppercase">Scholarships</span>
+                            <span class="text-slate-800 font-bold text-sm">校级三等奖学金 | 院级三等奖学金</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 核心课程网格 -->
+                <div class="mb-8">
+                    <h3 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-book-bookmark text-brand-500"></i> 核心专业课程
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium hover:bg-rose-50 hover:text-brand-600 transition-colors">Python程序设计</span>
+                        <span class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium hover:bg-rose-50 hover:text-brand-600 transition-colors">计量经济学</span>
+                        <span class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium hover:bg-rose-50 hover:text-brand-600 transition-colors">数字经济</span>
+                        <span class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium hover:bg-rose-50 hover:text-brand-600 transition-colors">时间序列分析</span>
+                        <span class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium hover:bg-rose-50 hover:text-brand-600 transition-colors">随机过程</span>
+                        <span class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium hover:bg-rose-50 hover:text-brand-600 transition-colors">公司金融</span>
+                        <span class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium hover:bg-rose-50 hover:text-brand-600 transition-colors">投资学</span>
+                    </div>
+                </div>
+
+                <!-- 专业能力拆解 -->
+                <div>
+                    <h3 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb text-brand-500"></i> 核心专业能力
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-100 flex items-center gap-3">
+                            <i class="fa-solid fa-chart-line text-brand-500"></i>
+                            <span class="text-slate-700 font-medium">定量数据分析</span>
+                        </div>
+                        <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-100 flex items-center gap-3">
+                            <i class="fa-solid fa-users text-brand-500"></i>
+                            <span class="text-slate-700 font-medium">用户 / 市场洞察</span>
+                        </div>
+                        <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-100 flex items-center gap-3">
+                            <i class="fa-solid fa-diagram-project text-brand-500"></i>
+                            <span class="text-slate-700 font-medium">数据可视化表达</span>
+                        </div>
+                        <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-100 flex items-center gap-3">
+                            <i class="fa-solid fa-flask text-brand-500"></i>
+                            <span class="text-slate-700 font-medium">实验设计与逻辑拆解</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 4. 技能特长 Section ==================== -->
+        <section id="tab-skills" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- 卡片 1: AI & 数据工具 (带动态进度条) -->
+                <div class="bg-white rounded-2xl p-6 border border-rose-100 shadow-sm card-hover">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-500 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-laptop-code"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">AI & 数据工具</h3>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span class="text-slate-700">Python (Data Science)</span>
+                                <span class="text-brand-500">熟练</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="bg-gradient-to-r from-brand-300 to-brand-500 h-2 rounded-full progress-bar-inner" style="width: 88%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span class="text-slate-700">Stata (计量分析)</span>
+                                <span class="text-brand-500">熟练</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="bg-gradient-to-r from-brand-300 to-brand-500 h-2 rounded-full progress-bar-inner" style="width: 85%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span class="text-slate-700">Excel 分析 & 数据可视化</span>
+                                <span class="text-brand-500">精通</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="bg-gradient-to-r from-brand-300 to-brand-500 h-2 rounded-full progress-bar-inner" style="width: 92%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span class="text-slate-700">iFind & Wind 终端</span>
+                                <span class="text-brand-500">熟练</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="bg-gradient-to-r from-brand-300 to-brand-500 h-2 rounded-full progress-bar-inner" style="width: 82%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卡片 2: AI 人机协同 -->
+                <div class="bg-white rounded-2xl p-6 border border-rose-100 shadow-sm card-hover">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-500 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">AI 人机协同能力</h3>
+                    </div>
+                    <div class="bg-rose-50/50 rounded-xl p-4 border border-rose-100 mb-4">
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            具备极强 AI 工具深度使用习惯，善于借助 <strong class="text-brand-600">ChatGPT / Claude / DeepSeek</strong> 等大语言模型进行复杂问题拆解、前沿信息提取与高质策略生成。
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 rounded-lg bg-slate-100 text-xs font-medium text-slate-600">Prompt 工程</span>
+                        <span class="px-3 py-1 rounded-lg bg-slate-100 text-xs font-medium text-slate-600">复杂逻辑拆解</span>
+                        <span class="px-3 py-1 rounded-lg bg-slate-100 text-xs font-medium text-slate-600">策略生成</span>
+                        <span class="px-3 py-1 rounded-lg bg-slate-100 text-xs font-medium text-slate-600">工作流提效</span>
+                    </div>
+                </div>
+
+                <!-- 卡片 3: 语言与沟通 -->
+                <div class="bg-white rounded-2xl p-6 border border-rose-100 shadow-sm card-hover">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-500 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-language"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">语言与沟通</h3>
+                    </div>
+                    <div class="space-y-3 text-xs">
+                        <div class="p-3 bg-slate-50 rounded-xl flex items-center justify-between">
+                            <span class="font-bold text-slate-700">普通话</span>
+                            <span class="text-brand-600 font-semibold">母语</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl flex items-center justify-between">
+                            <span class="font-bold text-slate-700">英语 IELTS</span>
+                            <span class="text-brand-600 font-semibold">7.0 分</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl flex items-center justify-between">
+                            <span class="font-bold text-slate-700">英语 GRE</span>
+                            <span class="text-brand-600 font-semibold">325 分</span>
+                        </div>
+                        <p class="text-slate-500 text-xs px-1">
+                            * 具备流畅英文文案撰写与专业商务交流能力。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 卡片 4: 综合兴趣 (羽毛球置顶) -->
+                <div class="bg-white rounded-2xl p-6 border border-rose-100 shadow-sm card-hover">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-500 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-icons"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">综合兴趣 & 软素质</h3>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs mb-4">
+                        <div class="p-3 bg-brand-50 text-brand-700 rounded-xl font-bold flex items-center gap-2 border border-brand-100">
+                            <i class="fa-solid fa-table-tennis-paddle-ball text-brand-500"></i> 羽毛球
+                        </div>
+                        <div class="p-3 bg-slate-50 text-slate-700 rounded-xl font-medium flex items-center gap-2">
+                            <i class="fa-solid fa-basketball text-rose-400"></i> 院女子篮球队成员
+                        </div>
+                        <div class="p-3 bg-slate-50 text-slate-700 rounded-xl font-medium flex items-center gap-2">
+                            <i class="fa-solid fa-guitar text-rose-400"></i> 吉他
+                        </div>
+                        <div class="p-3 bg-slate-50 text-slate-700 rounded-xl font-medium flex items-center gap-2">
+                            <i class="fa-solid fa-person-dots-from-line text-rose-400"></i> 爵士舞
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 border-t border-slate-100 pt-3">
+                        具备出色的团队协作力、高度的自律性与极强抗压能力。
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== 5. 证书 / 荣誉 Section ==================== -->
+        <section id="tab-honors" class="tab-content">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 border border-rose-100 shadow-sm card-hover">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-2.5 h-7 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-2xl font-extrabold text-slate-800">证书与荣誉奖项</h2>
+                    <span class="text-xs bg-rose-100 text-brand-600 px-2.5 py-0.5 rounded-full font-medium">Honors & Certificates</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    <!-- 荣誉 1 -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-white to-rose-50/40 border border-rose-100 shadow-sm flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 text-lg">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm mb-1">全国大学生数学建模竞赛</h4>
+                            <p class="text-xs text-brand-600 font-semibold">广东省一等奖</p>
+                        </div>
+                    </div>
+
+                    <!-- 荣誉 2 (美国大学生数学建模竞赛 H奖) -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-white to-rose-50/40 border border-rose-100 shadow-sm flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 text-lg">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm mb-1">美国大学生数学建模竞赛</h4>
+                            <p class="text-xs text-brand-600 font-semibold">H奖 (Honorable Mention)</p>
+                        </div>
+                    </div>
+
+                    <!-- 荣誉 3 -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-white to-rose-50/40 border border-rose-100 shadow-sm flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-rose-100 text-brand-600 flex items-center justify-center flex-shrink-0 text-lg">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm mb-1">中山大学优秀学生奖学金</h4>
+                            <p class="text-xs text-slate-500">校级三等奖学金</p>
+                        </div>
+                    </div>
+
+                    <!-- 荣誉 4 -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-white to-rose-50/40 border border-rose-100 shadow-sm flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-rose-100 text-brand-600 flex items-center justify-center flex-shrink-0 text-lg">
+                            <i class="fa-solid fa-building-columns"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm mb-1">岭南学院院级奖学金</h4>
+                            <p class="text-xs text-slate-500">院级三等奖学金</p>
+                        </div>
+                    </div>
+
+                    <!-- 荣誉 5 -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-white to-rose-50/40 border border-rose-100 shadow-sm flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 text-lg">
+                            <i class="fa-solid fa-certificate"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm mb-1">雅思 (IELTS) 语言证书</h4>
+                            <p class="text-xs text-emerald-600 font-semibold">成绩：7.0 分</p>
+                        </div>
+                    </div>
+
+                    <!-- 荣誉 6 -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-white to-rose-50/40 border border-rose-100 shadow-sm flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 text-lg">
+                            <i class="fa-solid fa-stamp"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm mb-1">GRE 考试认证</h4>
+                            <p class="text-xs text-emerald-600 font-semibold">成绩：325 分</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 页脚 Footer -->
+    <footer class="bg-white border-t border-rose-100 py-6 text-center text-xs text-slate-400 mt-auto">
+        <div class="max-w-6xl mx-auto px-4">
+            <p>© 2026 罗璇 (Luo Xuan). All Rights Reserved.</p>
+            <p class="mt-1 text-[11px] text-slate-300">中山大学 岭南学院 | 个人简历网站</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript 交互逻辑 & 头像探测函数 -->
+    <script>
+        // ==========================================================================
+        // 1. 单页应用 (SPA) 栏目无刷新切换逻辑
+        // ==========================================================================
+        function switchTab(tabId) {
+            // 获取所有 Section 元素
+            const sections = document.querySelectorAll('.tab-content');
+            sections.forEach(sec => {
+                sec.classList.remove('active');
+            });
+
+            // 激活当前 Section
+            const targetSection = document.getElementById(`tab-${tabId}`);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // 更新 PC 端导航按钮样式
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                btn.classList.remove('text-brand-600', 'bg-brand-50', 'shadow-sm');
+                btn.classList.add('text-slate-600');
+            });
+            const activeNavBtn = document.getElementById(`nav-${tabId}`);
+            if (activeNavBtn) {
+                activeNavBtn.classList.remove('text-slate-600');
+                activeNavBtn.classList.add('text-brand-600', 'bg-brand-50', 'shadow-sm');
+            }
+
+            // 更新移动端导航按钮样式
+            const mobileNavBtns = document.querySelectorAll('.mobile-nav-btn');
+            mobileNavBtns.forEach(btn => {
+                btn.classList.remove('bg-brand-50', 'text-brand-600');
+                btn.classList.add('text-slate-600');
+            });
+            const activeMobileNavBtn = document.getElementById(`mobile-nav-${tabId}`);
+            if (activeMobileNavBtn) {
+                activeMobileNavBtn.classList.remove('text-slate-600');
+                activeMobileNavBtn.classList.add('bg-brand-50', 'text-brand-600');
+            }
+
+            // 平滑滚动回顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 移动端汉堡菜单开关
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-xmark');
+            } else {
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('fa-xmark');
+                menuIcon.classList.add('fa-bars');
+            }
+        }
+
+        // ==========================================================================
+        // 2. 头像“优先级探测函数”（核心逻辑）
+        // 按顺序尝试加载 avatar.png -> avatar.jpg -> avatar.jpeg
+        // ==========================================================================
+        function detectAndSetAvatar() {
+            const avatarCandidates = ['avatar.png', 'avatar.jpg', 'avatar.jpeg'];
+            const avatarImg = document.getElementById('avatar-img');
+            const avatarFallback = document.getElementById('avatar-fallback');
+
+            let candidateIndex = 0;
+
+            function tryNextImage() {
+                if (candidateIndex >= avatarCandidates.length) {
+                    // 所有图片格式均探测失败，保留 SVG 占位层样式（无缝体验，无塌陷）
+                    console.log('未发现本地头像文件 (avatar.png/jpg/jpeg)，已启动优雅 SVG 备用占位。');
+                    return;
+                }
+
+                const currentSrc = avatarCandidates[candidateIndex];
+                const tempImg = new Image();
+
+                tempImg.onload = function() {
+                    // 找到了合法的本地头像，将其设为正式头像并展示
+                    avatarImg.src = currentSrc;
+                    avatarImg.classList.remove('hidden');
+                    if (avatarFallback) {
+                        avatarFallback.classList.add('hidden');
+                    }
+                };
+
+                tempImg.onerror = function() {
+                    // 加载失败，探测下一个候选后缀
+                    candidateIndex++;
+                    tryNextImage();
+                };
+
+                tempImg.src = currentSrc;
+            }
+
+            tryNextImage();
+        }
+
+        // 页面加载完成后启动探测与初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            detectAndSetAvatar();
+        });
+    </script>
+</body>
+</html>
